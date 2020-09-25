@@ -84,24 +84,39 @@
                 <li class="nav-item">
                   <a href="<?= base_url(); ?>/users/level" class="nav-link <?= (SEG1 == 'users' && SEG2) ? 'active' : ''; ?>">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>User Level</p>
+                    <p>Level User</p>
                   </a>
                 </li>
                 <li class="nav-item">
                   <a href="<?= base_url(); ?>/users" class="nav-link <?= (SEG1 == 'users' && !SEG2) ? 'active' : ''; ?>">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>User Data</p>
+                    <p>Data User</p>
                   </a>
                 </li>
               </ul>
             </li>
-            <li class="nav-item">
-              <a href="/products" class="nav-link">
+            <li class="nav-item has-treeview <?= (SEG1 == 'products') ? 'menu-open' : ''; ?>">
+              <a href="#" class="nav-link <?= (SEG1 == 'products') ? 'active' : ''; ?>">
                 <i class="nav-icon fas fa-box"></i>
                 <p>
-                  Barang
+                  Produk
+                  <i class="right fas fa-angle-left"></i>
                 </p>
               </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="<?= base_url(); ?>/products/category" class="nav-link <?= (SEG1 == 'products' && SEG2) ? 'active' : ''; ?>">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Kategori Produk</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="<?= base_url(); ?>/products" class="nav-link <?= (SEG1 == 'products' && !SEG2) ? 'active' : ''; ?>">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Data Produk</p>
+                  </a>
+                </li>
+              </ul>
             </li>
             <li class="nav-header">Transaksi</li>
             <li class="nav-item">
@@ -166,7 +181,7 @@
       <!-- Control sidebar content goes here -->
     </aside>
     <!-- /.control-sidebar -->
-
+    <input type="hidden" id="base_url" value="<?= base_url(); ?>">
     <!-- Main Footer -->
     <footer class="main-footer">
       <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>

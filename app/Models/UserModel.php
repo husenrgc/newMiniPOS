@@ -27,23 +27,28 @@ class UserModel extends Model
 
   public function saveUser($post)
   {
-    unset($post['csrf_test_name']);
     $post['password'] = md5('#c!Kst3cH'.$post['password'].'d3vTe@m');
     $post['active']   = 1;
     $this->run->insert($post);
     return $this->db->affectedRows();
   }
 
-  public function editUser($post)
+  public function editUser($id, $post)
   {
-    $this->run->insert($post);
-    return $this->run->affectedRows();
+    if ($post['password']) {
+      $post['password'] = md5('#c!Kst3cH' . $post['password'] . 'd3vTe@m');
+    } else {
+      unset($post['password']);
+    }
+    $post['updated_at'] = date('Y-m-d H:i:s');
+    $this->run->update($post, array('id' => $id));
+    return $this->db->affectedRows();
   }
 
-  public function delUser($post)
+  public function delUser($id)
   {
-    $this->run->insert($post);
-    return $this->run->affectedRows();
+    $this->run->delete($id);
+    return count($this->getUser($id));
   }
 
   public function getLevel($id = null)
@@ -56,31 +61,31 @@ class UserModel extends Model
 
   public function saveLevel($post)
   {
-    unset($post['csrf_test_name']);
     $post['active'] = 1;
     $this->db->table('user_level')->insert($post);
     return $this->db->affectedRows();
   }
 
-  public function editLevel($id = null)
+  public function editLevel($id, $post)
   {
-    if ($id) {
-      return $this->db->table('user_level')->getWhere(['id' => $id])->getResult();
-    }
-    return $this->db->table('user_level')->get()->getResult();
+    $post['updated_at'] = date('Y-m-d H:i:s');
+    $this->db->table('user_level')->update($post, array('id' => $id));
+    return $this->db->affectedRows();
   }
 
-  public function delLevel($id = null)
+  public function delLevel($id)
   {
-    if ($id) {
-      return $this->db->table('user_level')->getWhere(['id' => $id])->getResult();
-    }
-    return $this->db->table('user_level')->get()->getResult();
-  
+    $this->db->table('user_level')->delete($id);
+    return count($this->getLevel($id));
   }
-  public function cekUName($uname)
+  public function cekUName($uname, $oldId = null)
   {
-    $res = $this->run->where('username', $uname)->get()->resultID;
-    return $res->num_rows;
+    if ($oldId) {
+      $res = $this->run->where(['username' => $uname, 'id' => $oldId])->get()->resultID;
+      return $res->num_rows;
+    } else {
+      $res = $this->run->where('username', $uname)->get()->resultID;
+      return $res->num_rows;
+    }
   }
 }

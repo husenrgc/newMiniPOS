@@ -3,6 +3,12 @@
 <?= $this->section('style') ?>
 <link rel="stylesheet" href="<?= base_url(); ?>/public/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="<?= base_url(); ?>/public/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<style>
+  #example1 tbody tr td:first-child,
+  #example1 tbody tr td:last-child {
+    text-align: center;
+  }
+</style>
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
@@ -19,13 +25,14 @@
     <?php } ?>
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title"><a href="javascript:;" class="btn btn-block btn-primary btn-sm" data-toggle="modal" data-target="#modal-form"><i class="fas fa-plus"></i> Tambah User Baru</a></h3>
+        <h3 class="card-title"><a href="javascript:;" class="btn btn-block btn-primary btn-sm bt-add" data-toggle="modal" data-target="#modal-form"><i class="fas fa-plus"></i> Tambah User Baru</a></h3>
       </div>
       <!-- /.card-header -->
       <div class="card-body">
         <table id="example1" class="table table-bordered table-hover">
           <thead>
             <tr>
+              <th>No</th>
               <th>Username</th>
               <th>Nama User</th>
               <th>Level User</th>
@@ -34,13 +41,20 @@
             </tr>
           </thead>
           <tbody>
-            <?php foreach ($users as $usr) : ?>
+            <?php $n = 1;
+            foreach ($users as $usr) : ?>
               <tr>
+                <td><?= $n++; ?></td>
                 <td><?= $usr->username; ?></td>
                 <td><?= $usr->name; ?></td>
                 <td><?= $usr->nameLvl; ?></td>
                 <td><?= $usr->lastaccess; ?></td>
-                <td><?= $usr->id; ?></td>
+                <td>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-info bt-edit" title="Ubah Data" data-toggle="modal" data-target="#modal-form" data-id="<?= $usr->id; ?>"><i class="fas fa-edit"></i></button>
+                    <button type="button" class="btn btn-sm btn-danger bt-del" title="Hapus Data" data-toggle="modal" data-target="#modal-delete" data-id="<?= $usr->id; ?>" data-name="<?= $usr->name; ?>"><i class="fas fa-trash-alt"></i></button>
+                  </div>
+                </td>
               </tr>
             <?php endforeach; ?>
           </tbody>
@@ -52,7 +66,6 @@
   </div>
   <!-- /.col -->
 </div>
-</section>
 <?= $this->endSection() ?>
 
 <?= $this->section('script') ?>
@@ -60,8 +73,8 @@
 <div class="modal fade" id="modal-form">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form action="<?= base_url(); ?>/users/addUser" method="POST">
-      <?= csrf_field(); ?>
+      <form action="<?= base_url(); ?>/users/addUser" id="writeForm" method="POST">
+        <?= csrf_field(); ?>
         <div class="modal-header">
           <h4 class="modal-title">Tambah User</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -79,13 +92,13 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" class="form-control" required>
+                <input type="password" name="password" id="password" class="form-control" required>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label>Level</label>
-                <select class="form-control" name="level" required>
+                <select class="form-control" name="level" id="level" required>
                   <option value="">Pilih Level User</option>
                   <?php foreach ($levels as $lvl) : ?>
                     <option value="<?= $lvl->id; ?>"><?= $lvl->name; ?></option>
@@ -96,7 +109,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label>Nama User</label>
-                <input type="text" name="name" class="form-control" required>
+                <input type="text" name="name" id="name" class="form-control" required>
               </div>
             </div>
           </div>
@@ -111,41 +124,36 @@
   </div>
   <!-- /.modal-dialog -->
 </div>
+
+<div class="modal fade" id="modal-delete">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="<?= base_url(); ?>/users/delUser" id="delForm" method="POST">
+        <?= csrf_field(); ?>
+        <div class="modal-header">
+          <h4 class="modal-title">Hapus User</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="delId" name="id">
+          Apakah anda yakin ingin menghapus user <b id="delName"></b>?
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-danger">Hapus</button>
+        </div>
+      </form>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
 <!--------------------------------------------- END MODAL --------------------------------------------->
 <script src="<?= base_url(); ?>/public/assets/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="<?= base_url(); ?>/public/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="<?= base_url(); ?>/public/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="<?= base_url(); ?>/public/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-<!-- <script src="<?= base_url(); ?>/public/assets/module/user.js"></script> -->
-<script>
-  $(function() {
-    $("#example1").DataTable({
-      "responsive": true,
-      "autoWidth": false,
-    });
-  });
-  $('#username').on('keyup', function() {
-    var usr = $(this).val();
-    $.ajax({
-      type: "post",
-      url: "users/cekUsername",
-      // penyesuain cek disini
-      // https: //stackoverflow.com/questions/1368264/how-to-extract-the-hostname-portion-of-a-url-in-javascript#answer-17336519
-      data: "username=" + usr,
-      // dataType: "json",
-      success: function(response) {
-        console.log(response);
-        if (response == 'OK') {
-          $('#username').removeClass('is-invalid');
-          $('#username').addClass('is-valid');
-          $('#mod-sub').attr('disabled', false);
-        } else {
-          $('#username').removeClass('is-valid');
-          $('#username').addClass('is-invalid');
-          $('#mod-sub').attr('disabled', true);
-        }
-      }
-    });
-  });
-</script>
+<script src="<?= base_url(); ?>/public/assets/module/user.min.js"></script>
 <?= $this->endSection() ?>
